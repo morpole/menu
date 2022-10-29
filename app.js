@@ -78,59 +78,86 @@ const menu = [
     price: 39.99,
     img: "./images/item-10.jpeg",
     desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
-  }
-
+  },
+  {
+    id: 11,
+    title: "big wully dinner",
+    category: "apres dinner",
+    price: 19.99,
+    img: "./images/item-11.jpeg",
+    desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
+  },
 ];
+// get parent element
+const sectionCenter = document.querySelector(".section-center");
+const container = document.querySelector('.btn-container')
 
 
-const sectionCenter = document.querySelector('.section-center');
-const filterBtns = document.querySelectorAll('.filter-btn');
 
-// load items
-window.addEventListener('DOMContentLoaded', function() {
-  displayMenuItems(menu);
-  const categories = menu.map(function (item) {
-    return item.category;
-  })
-  console.log(categories)
+// display all items when page loads
+window.addEventListener("DOMContentLoaded", function () {
+  diplayMenuItems(menu);
+  displayMenuButtons()
 });
-  
-// filter items
-filterBtns.forEach(function (btn) {
-  btn.addEventListener('click', function(e){
-    const btnCategory = e.currentTarget.dataset.id;
-    const menuCategory = menu.filter(function(matchItem) {
-      if(matchItem.category === btnCategory) {
-        return matchItem;
+
+
+
+
+
+function diplayMenuItems(menuItems) {
+  let displayMenu = menuItems.map(function (item) {
+    // console.log(item);
+
+    return `<article class="menu-item">
+          <img src=${item.img} alt=${item.title} class="photo" />
+          <div class="item-info">
+            <header>
+              <h4>${item.title}</h4>
+              <h4 class="price">$${item.price}</h4>
+            </header>
+            <p class="item-text">
+              ${item.desc}
+            </p>
+          </div>
+        </article>`;
+  });
+  displayMenu = displayMenu.join("");
+  // console.log(displayMenu);
+
+  sectionCenter.innerHTML = displayMenu;
+}
+
+
+function displayMenuButtons() {
+  const categories = menu.reduce(function(values,item) {
+    if(!values.includes(item.category)) {
+      values.push(item.category);
+    }
+    return values;
+  }, ["all"]
+  );
+  const categoryBtns = categories.map(function(category) {
+    return `<button class="filter-btn" type="button" data-id=${category}>${category}</button>`
+  }).join("");
+
+  container.innerHTML = categoryBtns;
+  const filterBtns = container.querySelectorAll(".filter-btn");
+
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      // console.log(e.currentTarget.dataset);
+      const category = e.currentTarget.dataset.id;
+      const menuCategory = menu.filter(function (menuItem) {
+        // console.log(menuItem.category);
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+      if (category === "all") {
+        diplayMenuItems(menu);
+      } else {
+        diplayMenuItems(menuCategory);
       }
     });
-    if(btnCategory === "all") {
-        displayMenuItems(menu);
-    } else {
-      displayMenuItems(menuCategory);
-    }
-   });
-});
-
-
-
-
-
-function displayMenuItems(menuItems) {
-  let displayMenu = menuItems.map(function(item){
-    //  console.log(item);
-
-  return `<article class="menu-item">
-  <img src=${item.img} class="photo" alt=${item.title}>
-  <div class="item-info">
-    <header>
-      <h4>${item.title}</h4>
-      <h4 class="price">$${item.price}</h4>  
-    </header>
-    <p c lass="item-text">${item.desc}</div>
-</article>`;
-});
-
- displayMenu  = displayMenu.join("");
- sectionCenter.innerHTML = displayMenu;
-};
+  });
+}
